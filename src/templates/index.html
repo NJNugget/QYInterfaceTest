@@ -1,0 +1,76 @@
+{% extends 'base.html' %} {% block topbutton%}
+<ul class="nav navbar-nav">
+	<li><a href="../testcases">测试用例<!-- <span class="navbar-unread">1</span> --></a></li>
+	<li class="active"><a href="../">设备配置</a></li>
+	<li><a href="#">About</a></li>
+</ul>
+{% endblock%} {% block content %}
+<div class="container">
+	<div class="row col-md-5">
+		<form action="/execute/" method="get">
+			<!-- <h4>模拟请求数量</h4>
+			Default switch
+			<input type="checkbox" checked data-toggle="switch"
+				name="serverswitch" id="switch-01" /> -->
+			<h4>AB压力测试</h4>
+			<div class="form-group">
+				<label for="requestnum">模拟请求数量</label> <input type="text"
+					class="form-control" name="requestnum" id="requestnum"
+					>
+			</div>
+			<div class="form-group">
+				<label for="usersnum">模拟用户数量</label> <input type="text"
+					class="form-control" name="usersnum" id="usersnum" >
+			</div>
+			<div class="form-group">
+				<label for="address">接口地址</label><input type="text"
+					class="form-control" name="address" id="address"
+					placeholder="http://" >
+			</div>
+			<button type="submit" class="btn btn-embossed btn-primary">Submit</button>
+			<!-- <button type="submit" class="btn btn-embossed btn-primary">Save</button> -->
+		</form>
+
+	</div>
+</div>
+<script>
+	console.log({{is_alive}})
+	if ({{is_alive}} == 0){
+		$('#switch-01').radiocheck('uncheck');
+	}else{
+		$('#switch-01').radiocheck('check');
+	}
+	var devicename = document.getElementById("devicename").value;
+	var udid = document.getElementById("udid").value;
+	var address = document.getElementById("address").value;
+	var port = document.getElementById("port").value;
+	/* if(devicename==""){
+		$('#switch-01').radiocheck('disable');
+	} */
+	$('#switch-01').on('switchChange.bootstrapSwitch', function(event, state) {
+		console.log(this); // DOM element
+		console.log(event); // jQuery event
+		console.log(state); // true | false
+
+		
+		if (state == true) {
+			$.get("/result/", {
+				'devicename' : devicename,
+				'udid' : udid,
+				'address' : address,
+				'port' : port
+			}, function(ret) {
+				console.log(devicename);
+				alert("服务已经开启！");
+			});
+
+		}else {
+			$.get("/stopServer/",{'port':port}, function(ret) {
+				console.log(ret);
+				alert("服务已经关闭！");
+			});
+		}
+	});
+</script>
+{% endblock %}
+
